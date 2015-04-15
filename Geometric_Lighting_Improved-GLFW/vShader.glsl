@@ -3,8 +3,9 @@
 in vec3 position;
 in vec3 normal;
 
-uniform mat4 mpvMat;
-uniform mat4 mpMat;
+uniform mat4 modelMat;
+uniform mat4 viewMat;
+uniform mat4 projMat;
 uniform vec4 color;
 uniform vec4 camPos;
 
@@ -16,8 +17,8 @@ out vec4 CamPos;
 void main()
 {
 	Color = color;
-	Normal = vec4(normal.xy, -normal.z, 0.0);
-	WorldPos = mpvMat * vec4(position, 1.0);
-	CamPos = vec4(camPos.xy, -camPos.z, camPos.w);
-	gl_Position = WorldPos;
+	Normal =  modelMat * vec4(normal.xyz, 0.0) * inverse(transpose(modelMat));
+	WorldPos = modelMat * vec4(position.xyz, 1.0);
+	CamPos = camPos;
+	gl_Position = projMat * viewMat * modelMat * vec4(position.xyz, 1.0);
 }

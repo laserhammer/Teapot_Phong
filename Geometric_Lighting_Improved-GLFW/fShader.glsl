@@ -16,6 +16,7 @@ in vec4 WorldPos;
 in vec4 CamPos;
 
 uniform Light lights[MAX_LIGHTS];
+uniform mat4 modelMat;
 
 out vec4 outColor;
 
@@ -25,18 +26,18 @@ void main()
 	vec4 specular = vec4(0.0, 0.0, 0.0, 1.0);
 	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		vec4 lightDir = normalize(lights[i].position - WorldPos);
+		vec3 lightDir = lights[i].position.xyz - WorldPos.xyz;
 		float dis = length(lightDir);
 		
-		float NdotL = dot(-lightDir, Normal);
+		float NdotL = dot(vec4(-lightDir.xyz, 0.0), Normal);
 		float intensity = clamp(NdotL, 0.0, 1.0);
-		diffuse += intensity * lights[i].color * lights[i].power / dis + lights[i].ambient;
+		diffuse += intensity * lights[i].color * lights[i].power / (dis * dis) + lights[i].ambient;
 		
-		vec4 highlight = -reflect(lightDir, Normal);
+		vec4 highlight = -reflect(vec4(lightDir.xyz, 0.0), Normal);
 		vec4 outVec = normalize(CamPos) - normalize(WorldPos);
-		float specIntensity = pow(max(dot(highlight, outVec), 0.0), 0.15);
+		float specIntensity = pow(max(dot(highlight, outVec), 0.0), 1.0);
 		specular += clamp(specIntensity * lights[i].color  * 0.25, 0.0, 1.0);
 	}
 	
-	outColor =  specular + diffuse;
+	outColor = specular + diffuse * Color;
 };

@@ -53,12 +53,14 @@ void RenderShape::Draw()
 		if (_useDepthTest) glEnable(GL_DEPTH_TEST);
 		else glDisable(GL_DEPTH_TEST);
 
-		glm::mat4 mpMat = CameraManager::ProjMat() * _transform.modelMat;
-		glm::mat4 mpvMat = CameraManager::ProjMat() * CameraManager::ViewMat() * _transform.modelMat;
+		glm::mat4 modelMat = _transform.modelMat;
+		glm::mat4 viewMat = CameraManager::ViewMat();
+		glm::mat4 projMat = CameraManager::ProjMat();
 		glm::vec4 camPos = CameraManager::CamPos();
 
-		glUniformMatrix4fv(_shader.uMPMat, 1, GL_FALSE, glm::value_ptr(mpMat));
-		glUniformMatrix4fv(_shader.uMPVMat, 1, GL_FALSE, glm::value_ptr(mpvMat));
+		glUniformMatrix4fv(_shader.uModelMat, 1, GL_FALSE, glm::value_ptr(modelMat));
+		glUniformMatrix4fv(_shader.uViewMat, 1, GL_FALSE, glm::value_ptr(viewMat));
+		glUniformMatrix4fv(_shader.uProjMat, 1, GL_FALSE, glm::value_ptr(projMat));
 		glUniform4fv(_shader.uColor, 1, glm::value_ptr(_currentColor));
 		glUniform4fv(_shader.uCamPos, 1, glm::value_ptr(camPos));
 

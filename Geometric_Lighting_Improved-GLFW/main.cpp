@@ -28,13 +28,16 @@ GLuint selfIllumFragShader;
 GLuint selfIllumProgram;
 
 GLint posAttrib;
-GLint uMPMat;
-GLint uMPVMat;
+GLint uModelMat;
+GLint uViewMat;
+GLint uProjMat;
 GLint uColor;
 GLint uCamPos;
 
 GLint posAttrib_SI;
-GLint uMPVMat_SI;
+GLint uModelMat_SI;
+GLint uViewMat_SI;
+GLint uProjMat_SI;
 GLint uColor_SI;
 
 GLuint cubeVAO;
@@ -223,13 +226,15 @@ GLfloat teapotControlPoints[] = {
 };
 
 B_Spline* teapot;
+Light* lights[3];
 
 void generateTeapot()
 {
 	Shader shader;
 	shader.shaderPointer = shaderProgram;
-	shader.uMPMat = uMPMat;
-	shader.uMPVMat = uMPVMat;
+	shader.uModelMat = uModelMat;
+	shader.uViewMat = uViewMat;
+	shader.uProjMat = uProjMat;
 	shader.uColor = uColor;
 	shader.uCamPos = uCamPos;
 	
@@ -268,59 +273,64 @@ void SetupLights()
 {
 	Shader shader;
 	shader.shaderPointer = shaderProgram;
-	shader.uMPMat = uMPMat;
-	shader.uMPVMat = uMPVMat;
+	shader.uModelMat = uModelMat;
+	shader.uViewMat = uViewMat;
+	shader.uProjMat = uProjMat;
 	shader.uColor = uColor;
 	shader.uCamPos = uCamPos;
 
 	LightingManager::Init(shader);
 
-	Light& light0 = LightingManager::GetLight(0);
-	light0.angularVelocity = glm::angleAxis(30.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	light0.rotationOrigin = glm::vec3(-10.0f, 1.5f, 0.0f);
-	light0.position = glm::vec3(0.0f, -0.0f, 0.0f);
-	light0.color = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-	light0.ambient = glm::vec4(0.4f, 0.0f, 0.0f, 1.0f);
-	light0.power = 0.5f;
-	light0.active = true;
+	lights[0] = &LightingManager::GetLight(0);
+	lights[0]->angularVelocity = glm::angleAxis(30.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	lights[0]->rotationOrigin = glm::vec3(-5.0f, 1.5f, 0.0f);
+	//lights[0]->linearVelocity = glm::vec3(-1.0f, 0.0f, 0.0f);
+	lights[0]->position = glm::vec3(5.0f, -1.5f, 0.0f);
+	lights[0]->color = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+	lights[0]->ambient = glm::vec4(0.4f, 0.0f, 0.0f, 1.0f);
+	lights[0]->power = 10.0f;
+	lights[0]->active = true;
+	
+	lights[1] = &LightingManager::GetLight(1);
+	lights[1]->position = glm::vec3(5.0f, 0.0f, 0.0f);
+	lights[1]->color = glm::vec4(0.0f, 0.8f, 0.0f, 1.0f);
+	lights[1]->ambient = glm::vec4(0.0f, 0.4f, 0.0f, 1.0f);
+	lights[1]->power = 10.0f;
+	lights[1]->active = true;
 
-	Light& light1 = LightingManager::GetLight(1);
-	light1.position = glm::vec3(5.0f, 0.0f, 0.0f);
-	light1.color = glm::vec4(0.0f, 0.8f, 0.0f, 1.0f);
-	light1.ambient = glm::vec4(0.0f, 0.4f, 0.0f, 1.0f);
-	light1.power = 0.5f;
-	light1.active = true;
-
-	Light& light2 = LightingManager::GetLight(2);
-	light2.position = glm::vec3(-5.0f, 0.0f, 0.0f);
-	light2.color = glm::vec4(0.0f, 0.0f, 0.8f, 1.0f);
-	light2.ambient = glm::vec4(0.0f, 0.0f, 0.4f, 1.0f);
-	light2.power = 0.5f;
-	light2.active = true;
+	lights[2] = &LightingManager::GetLight(2);
+	lights[2]->position = glm::vec3(-5.0f, 0.0f, 0.0f);
+	lights[2]->color = glm::vec4(0.0f, 0.0f, 0.8f, 1.0f);
+	lights[2]->ambient = glm::vec4(0.0f, 0.0f, 0.4f, 1.0f);
+	lights[2]->power = 10.0f;
+	lights[2]->active = true;
 
 	Shader selfIllum;
 	selfIllum.shaderPointer = selfIllumProgram;
-	selfIllum.uMPVMat = uMPVMat_SI;
+	selfIllum.uModelMat = uModelMat_SI;
+	selfIllum.uViewMat = uViewMat_SI;
+	selfIllum.uProjMat = uProjMat_SI;
 	selfIllum.uColor = uColor_SI;
 
-	glGenBuffers(1, &cubeVAO);
-	glBindVertexArray(cubeVAO);
+	//glGenBuffers(1, &cubeVAO);
+	//glBindVertexArray(cubeVAO);
 	
-	glGenBuffers(1, &cubeVBO);
-	glBindBuffer(GL_VERTEX_ARRAY, cubeVBO);
-	glBufferData(cubeVBO, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+	//glGenBuffers(1, &cubeVBO);
+	//glBindBuffer(GL_VERTEX_ARRAY, cubeVBO);
+	//glBufferData(cubeVBO, sizeof(vertices), &vertices, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &cubeEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-	glBufferData(cubeEBO, sizeof(elements), &elements, GL_STATIC_DRAW);
+	//glGenBuffers(1, &cubeEBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
+	//glBufferData(cubeEBO, sizeof(elements), &elements, GL_STATIC_DRAW);
 
-	GLint posAttrib = glGetAttribLocation(selfIllum.shaderPointer, "position");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+	//GLint posAttrib = glGetAttribLocation(selfIllum.shaderPointer, "position");
+	//glEnableVertexAttribArray(posAttrib);
+	//glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 
-	//LightingManager::SetLightShape(new RenderShape(cubeVAO, Self_Lit, 36, GL_TRIANGLES, selfIllum), 0);
-	RenderManager::AddShape(new RenderShape(cubeVAO, Self_Lit, 36, GL_TRIANGLES, selfIllum));
-	//LightingManager::SetLightShape(new RenderShape(cubeVAO, Self_Lit, 36, GL_TRIANGLES, selfIllum), 1);
+	LightingManager::SetLightShape(new RenderShape(13, Self_Lit, 400, GL_TRIANGLES, selfIllum), 0);
+	//RenderManager::AddShape(new RenderShape(cubeVAO, Self_Lit, 36, GL_TRIANGLES, selfIllum));
+	LightingManager::SetLightShape(new RenderShape(14, Self_Lit, 400, GL_TRIANGLES, selfIllum), 1);
+	LightingManager::SetLightShape(new RenderShape(15, Self_Lit, 400, GL_TRIANGLES, selfIllum), 2);
 }
 
 void initShaders()
@@ -331,8 +341,9 @@ void initShaders()
 	
 	shaderProgram = initShaders(shaders, types, numShaders);
 
-	uMPMat = glGetUniformLocation(shaderProgram, "mpMat");
-	uMPVMat = glGetUniformLocation(shaderProgram, "mpvMat");
+	uModelMat = glGetUniformLocation(shaderProgram, "modelMat");
+	uViewMat = glGetUniformLocation(shaderProgram, "viewMat");
+	uProjMat = glGetUniformLocation(shaderProgram, "projMat");
 	uColor = glGetUniformLocation(shaderProgram, "color");
 	uCamPos = glGetUniformLocation(shaderProgram, "camPos");
 
@@ -341,7 +352,9 @@ void initShaders()
 	
 	selfIllumProgram = initShaders(si_Shaders, si_Types, numShaders);
 
-	uMPVMat_SI = glGetUniformLocation(selfIllumProgram, "mpvMat");
+	uModelMat_SI = glGetUniformLocation(selfIllumProgram, "modelMat");
+	uViewMat_SI = glGetUniformLocation(selfIllumProgram, "viewMat");
+	uProjMat_SI = glGetUniformLocation(selfIllumProgram, "projMat");
 	uColor_SI = glGetUniformLocation(selfIllumProgram, "color");
 }
 
@@ -371,7 +384,7 @@ void init()
 	time(&timer);
 	srand((unsigned int)timer);
 
-	//generateTeapot();
+	generateTeapot();
 
 	SetupLights();
 
@@ -394,13 +407,22 @@ void step()
 	float dTheta = 45.0f * InputManager::rightKey();
 	dTheta -= 45.0f * InputManager::leftKey();
 
-	//teapot->transform().angularVelocity = glm::angleAxis(dTheta, glm::vec3(0.0f, 1.0f, 0.0f));
+	teapot->transform().angularVelocity = glm::angleAxis(dTheta, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	float dx = 2.0f * InputManager::dKey();
+	dx -= 2.0f * InputManager::aKey();
+	float dy = 2.0f * InputManager::shiftKey();
+	dy -= 2.0f * InputManager::ctrlKey();
+	float dz = 2.0f * InputManager::wKey();
+	dz -= 2.0f * InputManager::sKey();
+
+	//lights[0]->linearVelocity = glm::vec3(dx, dy, dz);
 
 	CameraManager::Update(dt);
 
 	RenderManager::Update(dt);
 
-	//teapot->Update(dt);
+	teapot->Update(dt);
 
 	LightingManager::Update(dt);
 

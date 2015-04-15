@@ -28,11 +28,11 @@ Patch::Patch(Shader shader)
 
 	glGenBuffers(1, &_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat), &data, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * NUM_VERTS_STORED, &data, GL_DYNAMIC_DRAW);
 
 	glGenBuffers(1, &_ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint), &elements, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * NUM_ELEMENTS, &elements, GL_DYNAMIC_DRAW);
 
 	// Bind buffer data to shader values
 	GLint posAttrib = glGetAttribLocation(shader.shaderPointer, "position");
@@ -99,11 +99,21 @@ void Patch::UpdateSurface()
 		GLfloat t_inv = (1 - t);
 		GLfloat t_inv_sqr = t_inv * t_inv;
 
+		// These are the factors used in a Bernstein polynomial
+		// Bernstein polynomials increase in order as the number of 
+		// control points increases. For four control points, we'll
+		// use a third order polynomial. 
 		factors[i][0] = t_inv * t_inv_sqr;
 		factors[i][1] = 3 * t * t_inv_sqr;
 		factors[i][2] = 3 * t_sqr * t_inv;
 		factors[i][3] = t * t_sqr;
 
+		// One of the great mathematical properties of Bernstein 
+		// polynomials is that each order lower you go, you go 
+		// down one derivation and each order higher you go, you
+		// go up one integration. Calculus!
+		// In this case, we're storing one order lower to get 
+		// the slope of the bezier curve for finding the normal
 		factors[i][4] = t_inv_sqr;
 		factors[i][5] = 2 * t * t_inv;
 		factors[i][6] = t_sqr;
@@ -111,7 +121,6 @@ void Patch::UpdateSurface()
 	
 	glm::vec3 newControlPoints[4];
 	glm::vec3 newSlopeControlPoints[4];
-	glm::vec3 slopeControlPoints[3];
 	for (int i = 0; i < NUM_VERTS; ++i)
 	{
 		newControlPoints[0] = factors[i][0] * _controlPoints[0] + factors[i][1] * _controlPoints[1] + factors[i][2] * _controlPoints[2] + factors[i][3] * _controlPoints[3];
@@ -134,20 +143,13 @@ void Patch::UpdateSurface()
 			_verts[(j + (i * NUM_VERTS)) * 6 + 1] = newPoint.y;
 			_verts[(j + (i * NUM_VERTS)) * 6 + 2] = newPoint.z;
 
-			// These control points will generate the row tangent for this particular column
-			// Use the derivitave of the Bernstein polynomial to determine the normal of the curve at this point using the difference between control points as slope control points
-			// (1-t)^2 + 2t(1-t) + t^2
-			slopeControlPoints[0] = newControlPoints[1] - newControlPoints[0];
-			slopeControlPoints[1] = newControlPoints[2] - newControlPoints[1];
-			slopeControlPoints[2] = newControlPoints[3] - newControlPoints[2];
-
 			// This tangent represents the row tangent, so the tangent of the surface relative to the surface's x direction
-			glm::vec3 tangentA = factors[j][4] * slopeControlPoints[0] + factors[j][5] * slopeControlPoints[1] + factors[j][6] * slopeControlPoints[2];
+			glm::vec3 tangentA = factors[j][4] * (newControlPoints[1] - newControlPoints[0]) + factors[j][5] * (newControlPoints[2] - newControlPoints[1]) + factors[j][6] * (newControlPoints[3] - newControlPoints[2]);
 
 			// This tangent is a second valid tangent necessary for finding a cross product, this one being relative to the surface's y direction
 			glm::vec3 tangentB = factors[j][0] * newSlopeControlPoints[0] + factors[j][1] * newSlopeControlPoints[1] + factors[j][2] * newSlopeControlPoints[2] + factors[j][3] * newSlopeControlPoints[3];
 
-			// By taking the normals of these two tangents, we can get the normal to the surface
+			// By taking the normal of these two tangents, we can get the normal to the surface
 			glm::vec3 normal = glm::cross(glm::normalize(tangentA), glm::normalize(tangentB));
 
 			_verts[(j + (i * NUM_VERTS)) * 6 + 3] = normal.x;

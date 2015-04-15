@@ -40,8 +40,9 @@ struct Transform
 struct Shader
 {
 	GLint shaderPointer = -1;
-	GLint uMPMat = -1;
-	GLint uMPVMat = -1;
+	GLint uModelMat = -1;
+	GLint uViewMat = -1;
+	GLint uProjMat = -1;
 	GLint uColor = -1;
 	GLint uCamPos = -1;
 };
