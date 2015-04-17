@@ -26,7 +26,7 @@ void LightingManager::Init(Shader lightingShader)
 		_lights[i].active = false;
 
 		std::string currentLight = "lights[";
-		char numStringBuffer[2];
+		char numStringBuffer[32];
 		itoa(i, numStringBuffer, 10);
 		currentLight += numStringBuffer;
 		currentLight += "].";
@@ -67,6 +67,7 @@ void LightingManager::Update(float dt)
 		{
 			_lightShapes[i]->active() = _lights[i].active;
 			_lightShapes[i]->transform().position = glm::vec3(_lights[i].transformPos);
+			_lightShapes[i]->transform().scale = glm::vec3(0.1f, 0.1f, 0.1f);
 			_lightShapes[i]->currentColor() = _lights[i].color;
 		}
 	}

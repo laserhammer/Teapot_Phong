@@ -19,9 +19,9 @@ void RenderManager::AddShape(Shader shader, GLuint vao, GLenum type, GLsizei cou
 	_interactiveShapes[_interactiveShapes.size() - 1]->transform() = transform;
 }
 
-void RenderManager::AddShape(Shader shader, ShaderType shaderType, GLuint vao, GLenum type, GLsizei count, glm::vec4 color, Transform transform)
+void RenderManager::AddShape(Shader shader, GLuint vao, GLenum type, GLsizei count, glm::vec4 color, Transform transform)
 {
-	_shapes.push_back(new RenderShape(vao, shaderType, count, type, shader, color));
+	_shapes.push_back(new RenderShape(vao, count, type, shader, color));
 	_shapes[_shapes.size() - 1]->transform() = transform;
 }
 
@@ -30,19 +30,19 @@ void RenderManager::AddShape(RenderShape* shape)
 	if (shape->useDepthTest())
 	{
 		_shapes.push_back(shape);
-		_shapes[_shapes.size() - 1]->transform() = shape->transform();
+		//_shapes[_shapes.size() - 1]->transform() = shape->transform();
 	}
 	else
 	{
 		_noDepthShapes.push_back(shape);
-		_noDepthShapes[_noDepthShapes.size() - 1]->transform() = shape->transform();
+		//_noDepthShapes[_noDepthShapes.size() - 1]->transform() = shape->transform();
 	}
 }
 
 void RenderManager::AddShape(InteractiveShape* shape)
 {
 	_interactiveShapes.push_back(shape);
-	_interactiveShapes[_interactiveShapes.size() - 1]->transform() = shape->transform();
+	//_interactiveShapes[_interactiveShapes.size() - 1]->transform() = shape->transform();
 }
 
 void RenderManager::Update(float dt)

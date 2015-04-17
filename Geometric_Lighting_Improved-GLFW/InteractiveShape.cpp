@@ -3,7 +3,7 @@
 
 InteractiveShape::InteractiveShape(Collider collider, GLint vao, GLsizei count, GLenum mode, Shader shader, glm::vec4 color)
 {
-	this->RenderShape::RenderShape(vao, Self_Lit, count, mode, shader, color);
+	this->RenderShape::RenderShape(vao, count, mode, shader, color);
 	_collider = collider;
 	_mouseOver = false;
 	_selected = false;

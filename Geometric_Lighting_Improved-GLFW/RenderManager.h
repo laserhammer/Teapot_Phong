@@ -15,7 +15,7 @@ class RenderManager
 public:
 	static void AddShape(Shader shader, GLuint vao, GLenum type, GLsizei count, glm::vec4 color, Transform transform, Collider collider);
 
-	static void AddShape(Shader shader, ShaderType shaderType, GLuint vao, GLenum type, GLsizei count, glm::vec4 color, Transform transform);
+	static void AddShape(Shader shader, GLuint vao, GLenum type, GLsizei count, glm::vec4 color, Transform transform);
 	
 	static void AddShape(RenderShape* shape);
 

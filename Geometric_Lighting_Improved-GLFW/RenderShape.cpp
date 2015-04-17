@@ -1,7 +1,7 @@
 #include "RenderShape.h"
 #include "CameraManager.h"
 
-RenderShape::RenderShape(GLint vao, ShaderType type, GLsizei count, GLenum mode, Shader shader, glm::vec4 color, bool useDepthTest)
+RenderShape::RenderShape(GLint vao, GLsizei count, GLenum mode, Shader shader, glm::vec4 color, bool useDepthTest)
 {
 	_vao = vao;
 	_count = count;
@@ -13,8 +13,6 @@ RenderShape::RenderShape(GLint vao, ShaderType type, GLsizei count, GLenum mode,
 	_transform = Transform();
 
 	_useDepthTest = useDepthTest;
-
-	_type = type;
 }
 RenderShape::~RenderShape()
 {
@@ -110,8 +108,3 @@ bool RenderShape::useDepthTest()
 {
 	return _useDepthTest;
 }
-ShaderType RenderShape::type()
-{
-	return _type;
-}
-

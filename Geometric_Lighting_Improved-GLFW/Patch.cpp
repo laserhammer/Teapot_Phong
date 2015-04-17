@@ -43,7 +43,7 @@ Patch::Patch(Shader shader)
 	glEnableVertexAttribArray(normAttrib);
 	glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-	_curve = new RenderShape(_vao, Lit, NUM_ELEMENTS, GL_TRIANGLES, shader, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f));
+	_curve = new RenderShape(_vao, NUM_ELEMENTS, GL_TRIANGLES, shader, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f));
 
 	_curve->transform().parent = &_transform;
 	
@@ -54,7 +54,7 @@ Patch::Patch(Shader shader)
 Patch::~Patch()
 {
 	glDeleteBuffers(1, &_vbo);
-	glDeleteBuffers(1, &_vao);
+	glDeleteVertexArrays(1, &_vao);
 	glDeleteBuffers(1, &_ebo);
 }
 
