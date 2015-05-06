@@ -5,9 +5,7 @@ const int MAX_LIGHTS = 8;
 struct Light
 {
 	vec4 position;
-	vec4 color;
-	vec4 ambient;
-	float power;
+	vec4 color_difPower;
 };
 
 in vec4 Color;
@@ -16,6 +14,7 @@ in vec4 WorldPos;
 in vec4 CamPos;
 
 uniform Light lights[MAX_LIGHTS];
+uniform vec4 ambient;
 
 out vec4 outColor;
 
@@ -23,20 +22,23 @@ void main()
 {
 	vec4 diffuse = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 specular = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 lightColor, lightVec, lightDir, highlight, outVec, specInt;
+	float dis, NdotL, lightPower;
 	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		vec3 lightDir = lights[i].position.xyz - WorldPos.xyz;
-		float dis = length(lightDir);
+		lightColor = vec4(lights[i].color_difPower.xyz, 1.0);
+		lightPower = lights[i].color_difPower.w;
+		lightVec = vec4(lights[i].position.xyz - WorldPos.xyz, 0.0);
+		lightDir = normalize(lightVec);
 		
-		float NdotL = dot(vec4(-lightDir.xyz, 0.0), Normal);
-		float intensity = clamp(NdotL, 0.0, 1.0);
-		diffuse += intensity * lights[i].color * lights[i].power / (dis * dis) + lights[i].ambient;
+		dis = length(lightVec);
+		NdotL = dot(Normal, lightDir);
+		diffuse += clamp(NdotL, 0.0, 1.0) * lightColor * lightPower / (dis * dis);
 		
-		vec4 highlight = -reflect(vec4(lightDir.xyz, 0.0), Normal);
-		vec4 outVec = normalize(CamPos) - normalize(WorldPos);
-		float specIntensity = pow(max(dot(highlight, outVec), 0.0), 0.3);
-		specular += clamp(specIntensity * lights[i].color  * 0.5, 0.0, 1.0) * intensity;
+		highlight = reflect(-lightDir, Normal);
+		outVec = normalize(CamPos - WorldPos);
+		specular += lightColor * pow(max(dot(highlight, outVec), 0.0), 10.0);
 	}
 	
-	outColor = specular + diffuse * Color;
+	outColor = specular + (diffuse + ambient) * Color;
 };

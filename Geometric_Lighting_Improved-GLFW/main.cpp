@@ -253,40 +253,30 @@ void SetupLights()
 	lights[0]->rotationOrigin = glm::vec3(-3.0f, 1.5f, 0.0f);
 	lights[0]->position = glm::vec3(3.0f, -1.5f, 0.0f);
 	lights[0]->color = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-	lights[0]->ambient = glm::vec4(0.4f, 0.0f, 0.0f, 1.0f);
 	lights[0]->power = 5.0f;
-	lights[0]->active = true;
 	
 	lights[1] = &LightingManager::GetLight(1);
 	lights[1]->position = glm::vec3(3.0f, 1.0f, 0.0f);
 	lights[1]->color = glm::vec4(0.0f, 0.8f, 0.0f, 1.0f);
-	lights[1]->ambient = glm::vec4(0.0f, 0.4f, 0.0f, 1.0f);
 	lights[1]->power = 5.0f;
-	lights[1]->active = true;
 
 	lights[2] = &LightingManager::GetLight(2);
 	lights[2]->position = glm::vec3(-3.0f, 1.0f, 0.0f);
 	lights[2]->color = glm::vec4(0.0f, 0.0f, 0.8f, 1.0f);
-	lights[2]->ambient = glm::vec4(0.0f, 0.0f, 0.4f, 1.0f);
 	lights[2]->power = 5.0f;
-	lights[2]->active = true;
 
-	GLenum error;
-	error = glGetError();
+	LightingManager::SetAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
+
 	glGenVertexArrays(1, &cubeVAO);
 	glBindVertexArray(cubeVAO);
-
-	error = glGetError();
 	
 	glGenBuffers(1, &cubeVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-	error = glGetError();
 
 	glGenBuffers(1, &cubeEBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), &elements, GL_STATIC_DRAW);
-	error = glGetError();
 
 	GLint posAttrib = glGetAttribLocation(selfIllumShader.shaderPointer, "position");
 	glEnableVertexAttribArray(posAttrib);
@@ -329,6 +319,10 @@ void initShaders()
 
 void init()
 {
+	// Enable run-time memory check for debug builds.
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	if (!glfwInit()) exit(EXIT_FAILURE);
 
 	//Create window

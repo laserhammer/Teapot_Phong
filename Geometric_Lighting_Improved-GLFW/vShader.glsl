@@ -17,7 +17,7 @@ out vec4 CamPos;
 void main()
 {
 	Color = color;
-	Normal =  inverse(transpose(modelMat)) * vec4(normal.xyz, 0.0);
+	Normal =  transpose(inverse(modelMat)) * vec4(normal.xyz, 0.0);
 	WorldPos = modelMat * vec4(position.xyz, 1.0);
 	CamPos = camPos;
 	gl_Position = projMat * viewMat * modelMat * vec4(position.xyz, 1.0);

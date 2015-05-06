@@ -64,6 +64,8 @@ void RenderShape::Draw()
 
 		//Make draw call
 		glDrawElements(_mode, _count, GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
 	}
 }
 

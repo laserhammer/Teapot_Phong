@@ -150,7 +150,7 @@ void Patch::UpdateSurface()
 			glm::vec3 tangentB = factors[j][0] * newSlopeControlPoints[0] + factors[j][1] * newSlopeControlPoints[1] + factors[j][2] * newSlopeControlPoints[2] + factors[j][3] * newSlopeControlPoints[3];
 
 			// By taking the normal of these two tangents, we can get the normal to the surface
-			glm::vec3 normal = glm::cross(glm::normalize(tangentA), glm::normalize(tangentB));
+			glm::vec3 normal = glm::cross(glm::normalize(tangentB), glm::normalize(tangentA));
 
 			_verts[(j + (i * NUM_VERTS)) * 6 + 3] = normal.x;
 			_verts[(j + (i * NUM_VERTS)) * 6 + 4] = normal.y;
