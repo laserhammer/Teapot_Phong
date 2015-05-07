@@ -1,3 +1,71 @@
+/*
+*	Geometric Lighting Improved
+*	This example makes use of the teapot bezier spline established in the B-Spline example and thus retains many of the same components.
+*	This version builds upon the geometric lighting example by adding a lighting manager. This allows for multiple dynamic lights
+*	to be placed in the scene. Furthermore, it adds a phong lighting model to the fragment shader, making our teapot even prettier.
+*	Also, to make things a bit easier to see and understand, this code includes some boxes using self-lit shaders to indicate the positions
+*	of the lights in the scene.
+*	There are 4 static component classes that make up the base functionality of this program.
+*
+*	1) RenderManager
+*	- This class maintains the display list for the scene being rendered and thus handles the processes of updating and drawing all
+*	of the RenderShapes that have been instantiated in the scene.
+*
+*	2) CameraManager
+*	- This class maintains data relating to the view and projection matrices used in the rendering pipeline. It also handles updating
+*	this data based on user input.
+*
+*	3) InputManager
+*	- This class maintains data for the current state of user input for the mouse and keyboard.
+*
+*	4) LightingManager
+*	- This class maintains data for an array of eight lights, each posessing a trasform, color and power, handles the updating thereof and 
+*	maintains gpu-side buffers reflecting this data for use in the shaders. 
+*
+*	B_Spline
+*	- This non-static class is instantiated to maintain an array of Patch objects. Control point data is sent to this class to manipulate
+*	component patches.
+*
+*	Patch
+*	- This non-static class handles the data storage and updating for a single bezier surface containing a dynamically drawn RenderShape
+*	and 16 control points that through a third-order Bernstein polynomial determine mathematically the positions of the vertices comprising
+*	the surface.
+*
+*	RenderShape
+*	- This class tracks instance data for every shape that is drawn to the screen. This data primarily includes a vertex array object and
+*	transform data. This transform data is used to generate the model matrix used along with the view and projection matrices in the
+*	rendering pipeline.
+*
+*	Init_Shader
+*	- Contains static functions for reading, compiling and linking shaders.
+*
+*
+*	SHADERS
+*
+*	vShader.glsl
+*	- Simple through shader, applies transforms to verts and normals before passing them through to the fragment shader.
+*
+*	fShader.glsl
+*	- Uses a hard-coded point-light to apply the color of the light to the current fragment based on the phong lighting model.
+*	see: http://en.wikipedia.org/wiki/Phong_reflection_model
+*	Under the phong lighting model, the color of a surface is dertermined by ls + ld + la
+*	la is the ambient light of the scene and is a set constant value.
+*	ld is the diffuse light determined by the lambert model ld = clamp(Normal dot lightDir, 0, 1) * diffuseColor * diffusePower / distance^2
+*	ls is the specular color determined by the angle between the reflection of the light vector about the normal of the surface and the 
+*	viewing vector of the camera. As with lambert's law, the dot product of the viewing vector and the reflection vector is equal to the cosine
+*	of the angle between them. Then get rid of any values less than 0. Now obviously, not all materials are equally shiny. smooth surfaces will
+*	have small, intense highlights while rough surfaces will have larger highlights that fall off in intensity more slowly. Any of this spectrum
+*	of effects  can be accomplished by raising this highlight value to a shininess exponent. so highlightValue^Shininess. Higher the exponent,
+*	the small and more intense your specular highlights will appear, or conversly lower exponents will create larger and duller highlights. 
+*	Approach an exponent of 0.0 for some seriously trippy highlight action.
+*	So ls = pow(max(reflect(-lightDr, Normal) dot viewingVector, 0.0), shininessExponent) * specularColor
+*
+*	self_illum_vert.glsl
+*	- Through shader
+*
+*	self_illum_frag.glsl
+*	- Renders tris using only the color passed in, ignoring lighting data
+*/
 #include <GLEW\GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <GLM\gtc\type_ptr.hpp>
@@ -8,7 +76,6 @@
 #include <ctime>
 
 #include "RenderShape.h"
-#include "InteractiveShape.h"
 #include "Init_Shader.h"
 #include "RenderManager.h"
 #include "InputManager.h"
@@ -70,6 +137,7 @@ GLint elements[] = {
 
 // Source http://www.holmes3d.net/graphics/teapot/teapotCGA.bpt
 GLfloat teapotControlPoints[] = {
+#pragma region Teapot Control Points
 	1.4, 2.25, 0,		1.3375,	2.38125, 0,			1.4375,	2.38125, 0,			1.5, 2.25, 0,
 	1.4, 2.25, .784,	1.3375,	2.38125, .749,		1.4375, 2.38125, .805,		1.5, 2.25, .84,
 	.784, 2.25, 1.4,	.749, 2.38125, 1.3375,		.805, 2.38125, 1.4375,		.84, 2.25, 1.5,
@@ -209,6 +277,7 @@ GLfloat teapotControlPoints[] = {
 	.112, 2.55, -.2,	.224, 2.4, -.4,				.728, 2.4, -1.3,			.728, 2.25, -1.3,
 	.2, 2.55, -.112,	.4, 2.4, -.224,				1.3, 2.4, -.728,			1.3, 2.25, -.728,
 	.2, 2.55, 0,		.4, 2.4, 0,					1.3, 2.4, 0,				1.3, 2.25, 0
+#pragma endregion 
 };
 
 void generateTeapot()
@@ -267,6 +336,7 @@ void SetupLights()
 
 	LightingManager::SetAmbient(glm::vec3(0.5f, 0.5f, 0.5f));
 
+	// Generate the buffer for the cubes used to show the lights' positions
 	glGenVertexArrays(1, &cubeVAO);
 	glBindVertexArray(cubeVAO);
 	
@@ -353,6 +423,8 @@ void init()
 
 	InputManager::Init(window);
 	CameraManager::Init(800.0f / 600.0f, 60.0f, 0.1f, 100.0f);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void step()

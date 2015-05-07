@@ -1,7 +1,6 @@
 #include "Patch.h"
 #include "RenderManager.h"
 #include "RenderShape.h"
-#include "InteractiveShape.h"
 #include "Init_Shader.h"
 #include "InputManager.h"
 

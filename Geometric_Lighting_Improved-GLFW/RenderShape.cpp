@@ -1,7 +1,7 @@
 #include "RenderShape.h"
 #include "CameraManager.h"
 
-RenderShape::RenderShape(GLint vao, GLsizei count, GLenum mode, Shader shader, glm::vec4 color, bool useDepthTest)
+RenderShape::RenderShape(GLint vao, GLsizei count, GLenum mode, Shader shader, glm::vec4 color)
 {
 	_vao = vao;
 	_count = count;
@@ -11,8 +11,6 @@ RenderShape::RenderShape(GLint vao, GLsizei count, GLenum mode, Shader shader, g
 	_currentColor = color;
 
 	_transform = Transform();
-
-	_useDepthTest = useDepthTest;
 }
 RenderShape::~RenderShape()
 {
@@ -48,9 +46,6 @@ void RenderShape::Draw()
 
 		glUseProgram(_shader.shaderPointer);
 
-		if (_useDepthTest) glEnable(GL_DEPTH_TEST);
-		else glDisable(GL_DEPTH_TEST);
-
 		glm::mat4 modelMat = _transform.modelMat;
 		glm::mat4 viewMat = CameraManager::ViewMat();
 		glm::mat4 projMat = CameraManager::ProjMat();
@@ -64,8 +59,6 @@ void RenderShape::Draw()
 
 		//Make draw call
 		glDrawElements(_mode, _count, GL_UNSIGNED_INT, 0);
-
-		glBindVertexArray(0);
 	}
 }
 
@@ -105,8 +98,4 @@ Shader RenderShape::shader()
 bool& RenderShape::active()
 {
 	return _active;
-}
-bool RenderShape::useDepthTest()
-{
-	return _useDepthTest;
 }

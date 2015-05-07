@@ -50,7 +50,7 @@ struct Shader
 class RenderShape
 {
 public:
-	RenderShape(GLint vao = 0, GLsizei count = 0, GLenum mode = 0, Shader shader = Shader(), glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), bool useDepthTest = true);
+	RenderShape(GLint vao = 0, GLsizei count = 0, GLenum mode = 0, Shader shader = Shader(), glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	~RenderShape();
 
 	void Update(float dt);
@@ -65,7 +65,6 @@ public:
 	GLenum mode();
 	Shader shader();
 	bool& active();
-	bool useDepthTest();
 
 private:
 
@@ -79,5 +78,4 @@ protected:
 	glm::vec4 _currentColor;
 	Transform _transform;
 	bool _active;
-	bool _useDepthTest;
 };

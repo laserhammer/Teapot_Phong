@@ -34,7 +34,7 @@ void LightingManager::Init(Shader lightingShader)
 		std::string pos = "position";
 		std::string col = "color_difPower";
 		_lights[i].uPosition = glGetUniformLocation(_shader, (currentLight + pos).c_str());
-		_lights[i].uColor = glGetUniformLocation(_shader, (currentLight + col).c_str());
+		_lights[i].uColor_difPower = glGetUniformLocation(_shader, (currentLight + col).c_str());
 	}	
 
 	_uAmbient = glGetUniformLocation(_shader, "ambient");
@@ -57,7 +57,7 @@ void LightingManager::Update(float dt)
 		glm::vec4 color_power = glm::vec4(_lights[i].color.swizzle(glm::comp::X, glm::comp::Y, glm::comp::Z), _lights[i].power);
 
 		glUniform4fv(_lights[i].uPosition, 1, glm::value_ptr(_lights[i].transformPos));
-		glUniform4fv(_lights[i].uColor, 1, glm::value_ptr(color_power));
+		glUniform4fv(_lights[i].uColor_difPower, 1, glm::value_ptr(color_power));
 
 		if (_lightShapes[i])
 		{

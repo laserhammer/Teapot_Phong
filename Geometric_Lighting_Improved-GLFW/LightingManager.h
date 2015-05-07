@@ -3,7 +3,6 @@
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\quaternion.hpp>
 #include "RenderShape.h"
-#include "InteractiveShape.h"
 struct Light
 {
 	glm::vec3 position;
@@ -12,7 +11,7 @@ struct Light
 	glm::vec3 rotationOrigin;
 	glm::quat angularVelocity;
 	glm::vec4 color;
-	GLint uColor;
+	GLint uColor_difPower;
 	glm::vec4 transformPos;
 	GLint uPosition;
 	float power;

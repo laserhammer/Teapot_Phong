@@ -37,7 +37,7 @@ void main()
 		
 		highlight = reflect(-lightDir, Normal);
 		outVec = normalize(CamPos - WorldPos);
-		specular += lightColor * pow(max(dot(highlight, outVec), 0.0), 10.0);
+		specular += lightColor * pow(max(dot(highlight, outVec), 0.0), 3.0);
 	}
 	
 	outColor = specular + (diffuse + ambient) * Color;
