@@ -86,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *	self_illum_frag.glsl
 *	- Renders tris using only the color passed in, ignoring lighting data
 */
-#include <GLEW\GL\glew.h>
+#include <GLEW\glew.h>
 #include <GLFW\glfw3.h>
 #include <GLM\gtc\type_ptr.hpp>
 #include <GLM\gtc\matrix_transform.hpp>

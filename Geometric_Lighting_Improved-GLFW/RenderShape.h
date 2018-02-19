@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLEW\GL\glew.h>
+#include <GLEW\glew.h>
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\quaternion.hpp>
 #include <GLM\gtc\type_ptr.hpp>

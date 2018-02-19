@@ -1,7 +1,7 @@
 #pragma once
 #include "RenderShape.h"
 
-#include <GLEW\GL\glew.h>
+#include <GLEW\glew.h>
 #include <GLM\gtc\matrix_transform.hpp>
 #include <vector>
 

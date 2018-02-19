@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLEW\GL\glew.h>
+#include <GLEW\glew.h>
 
 static char* textFileRead(char* fn);
 

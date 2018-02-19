@@ -1,5 +1,5 @@
 #pragma once
-#include <GLEW\GL\glew.h>
+#include <GLEW\glew.h>
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\quaternion.hpp>
 #include "RenderShape.h"
